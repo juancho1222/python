@@ -1,0 +1,82 @@
+import fire
+import json
+import os
+from datetime import datetime
+
+RUTA_DB = 'tareas.json'
+
+
+class GestorTareas:
+    def __init__(self):
+        if not os.path.exists(RUTA_DB):
+            with open(RUTA_DB, 'w') as f:
+                json.dump([], f)
+
+    def agregar(self, titulo, descripcion='', prioridad='media'):
+        """Agrega una nueva tarea"""
+        nueva_tarea = {
+            'id': self._generar_id(),
+            'titulo': titulo,
+            'descripcion': descripcion,
+            'prioridad': prioridad,
+            'fecha_creacion': datetime.now().isoformat(),
+            'completada': False
+        }
+
+        tareas = self._leer_tareas()
+        tareas.append(nueva_tarea)
+        self._guardar_tareas(tareas)
+        print(f"✅ Tarea '{titulo}' agregada correctamente.")
+
+    def listar(self, completadas=None):
+        """Lista todas las tareas, puedes filtrar por completadas=True o False"""
+        tareas = self._leer_tareas()
+        if completadas is not None:
+            tareas = [t for t in tareas if t['completada'] == completadas]
+        
+        if not tareas:
+            print("📭 No hay tareas para mostrar.")
+            return
+
+        for t in tareas:
+            estado = '✅' if t['completada'] else '🔲'
+            print(f"{estado} [{t['id']}] {t['titulo']} ({t['prioridad']})")
+
+    def completar(self, id_tarea):
+        """Marca una tarea como completada"""
+        tareas = self._leer_tareas()
+        for t in tareas:
+            if str(t['id']) == str(id_tarea):
+                t['completada'] = True
+                self._guardar_tareas(tareas)
+                print(f"🎉 Tarea '{t['titulo']}' marcada como completada.")
+                return
+        print("❌ No se encontró una tarea con ese ID.")
+
+    def eliminar(self, id_tarea):
+        """Elimina una tarea por ID"""
+        tareas = self._leer_tareas()
+        nuevas = [t for t in tareas if str(t['id']) != str(id_tarea)]
+        if len(nuevas) == len(tareas):
+            print("❌ No se encontró una tarea con ese ID.")
+            return
+        self._guardar_tareas(nuevas)
+        print(f"🗑️ Tarea {id_tarea} eliminada.")
+
+    def _generar_id(self):
+        tareas = self._leer_tareas()
+        if not tareas:
+            return 1
+        return max(t['id'] for t in tareas) + 1
+
+    def _leer_tareas(self):
+        with open(RUTA_DB, 'r') as f:
+            return json.load(f)
+
+    def _guardar_tareas(self, tareas):
+        with open(RUTA_DB, 'w') as f:
+            json.dump(tareas, f, indent=4)
+
+
+if __name__ == '__main__':
+    fire.Fire(GestorTareas)

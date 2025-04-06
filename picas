@@ -1,0 +1,44 @@
+import random 
+
+def extension():
+    digitos = list(range(10))
+    random.shuffle(digitos)
+    return "".join(str(digitos[i]) for i in range(4))  # Generar un número de 4 dígitos aleatorio
+
+def numeros(aleatorio, intento):
+    picas = 0
+    fijas = 0
+    for i in range(4):
+        if intento[i] == aleatorio[i]:
+            fijas += 1
+        elif intento[i] in aleatorio:
+            picas += 1 
+    return picas, fijas
+
+def juego():
+    intentos_maximos = int(input("Ingrese el número de intentos: "))  # Conversión correcta
+    aleatorio = extension()
+    tries = 0
+
+    print("Bienvenido al juego de Picas y Fijas")
+    print("Debes adivinar un número de 4 dígitos distintos.")
+
+    while tries < intentos_maximos:
+        intento = input(f"Intento {tries + 1}: ")
+        
+        if not intento.isdigit() or len(intento) != 4:
+            print("Ingresa un número válido de 4 dígitos.")
+            continue
+
+        picas, fijas = numeros(aleatorio, intento)
+        print(f"Picas: {picas}, Fijas: {fijas}")
+
+        if fijas == 4:
+            print("¡Felicidades! ganaste.")
+            return
+        
+        tries += 1
+    
+    print(f"Se acabaron los intentos. El número era: {aleatorio}")
+
+juego()
