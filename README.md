@@ -1,0 +1,1 @@
+[Propuesta_uso_Fire_Proyecto_Gestion_Inventarios.docx](https://github.com/user-attachments/files/19915832/Propuesta_uso_Fire_Proyecto_Gestion_Inventarios.docx)
